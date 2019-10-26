@@ -18,7 +18,7 @@ Route::get('/', function (\Illuminate\Http\Request $request) {
 
 //	dd($user->hasRole('developer'));
 //		dd($user->givePermissionsTo('create-tasks'));
-	dd($user->can('create-tasks'));
+	// dd($user->can('create-tasks'));
 });
 
 Auth::routes();

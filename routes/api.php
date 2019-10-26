@@ -13,6 +13,18 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+Route::middleware('api')->group(function() {
+   // Route::post('login', 'API\AuthController@issueToken');
 });
+
+Route::group(['middleware' => 'role:admin'], function() {
+   //  Route::get('/admin', function() {
+   //     return 'Welcome Admin';
+   //  });
+   Route::apiResources([
+      'users' => 'API\UserController',
+   ]);
+ });

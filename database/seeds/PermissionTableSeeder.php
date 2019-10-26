@@ -1,7 +1,7 @@
 <?php
 
-use App\Permission;
-use App\Role;
+use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 
 class PermissionTableSeeder extends Seeder
@@ -13,19 +13,19 @@ class PermissionTableSeeder extends Seeder
      */
     public function run()
     {
-	    $dev_role = Role::where('slug','developer')->first();
-	    $manager_role = Role::where('slug', 'manager')->first();
+	    $administrator_role = Role::where('slug','administrator')->first();
+	    $owner_role = Role::where('slug', 'owner')->first();
 
-	    $createTasks = new Permission();
-	    $createTasks->slug = 'create-tasks';
-	    $createTasks->name = 'Create Tasks';
-	    $createTasks->save();
-	    $createTasks->roles()->attach($dev_role);
-
-	    $editUsers = new Permission();
-	    $editUsers->slug = 'edit-users';
-	    $editUsers->name = 'Edit Users';
-	    $editUsers->save();
-	    $editUsers->roles()->attach($manager_role);
+	    $createUsers = new Permission();
+	    $createUsers->slug = 'create-user';
+	    $createUsers->name = 'Create Users';
+	    $createUsers->save();
+		// $createUsers->roles()->attach($administrator_role);
+		
+		$createRoles = new Permission();
+	    $createRoles->slug = 'create-role';
+	    $createRoles->name = 'Create Roles';
+	    $createRoles->save();
+		// $createRoles->roles()->attach($owner_role);
     }
 }
