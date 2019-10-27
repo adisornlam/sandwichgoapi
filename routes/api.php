@@ -21,8 +21,9 @@ Route::middleware('api')->group(function() {
 });
 
 Route::middleware('auth:api')->group( function () {
+   Route::post('logout', 'API\AuthController@logout');
    Route::apiResources([
-      'products' => 'API\ProductController',
+      // 'products' => 'API\ProductController',
       'users' => 'API\UserController',
    ]);
 });

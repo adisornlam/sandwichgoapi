@@ -58,4 +58,10 @@ class AuthController extends ATC
             return response()->json(['success' => false, "message" => "error: " . $e], 200);
         }
     }
+
+    public function logout(Request $request)
+    {
+        $request->user()->token()->revoke();
+        return response()->json(['success' => true, "message" => "Logout success."], 200);
+    }
 }

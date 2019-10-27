@@ -7,8 +7,11 @@ use Illuminate\Http\Request;
 use Validator;
 
 use App\Models\User;
+use App\Models\Role;
+use App\Models\Permission;
 use App\Http\Resources\UserSearchResource;
 use App\Http\Resources\UserResource;
+use PhpParser\Node\Stmt\TryCatch;
 
 class UserController extends BaseController
 {
@@ -67,9 +70,21 @@ class UserController extends BaseController
             return $this->sendError('Validation Error.', $validator->errors());       
         }
 
-        $user = User::create($input);
+        try {
+            $user = new User;
+            $user->name = $request->input('name');
+            $user->email = $request->input('email');
+            $user->password = bcrypt($request->input('password'));
+            $user->save();
 
-        return $this->sendResponse($user, 'User created successfully.');
+            $role = Role::where('slug', $request->input('role'))->first();
+            $user->roles()->attach($role);
+            $user->permissions()->attach($role->permissions);
+
+            return $this->sendResponse($user, 'User created successfully.');
+        } catch (\Throwable $th) {
+            return $this->sendError('Error.', $th->getMessage());
+        }
     }
 
     /**
