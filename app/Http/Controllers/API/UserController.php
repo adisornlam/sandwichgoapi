@@ -8,10 +8,8 @@ use Validator;
 
 use App\Models\User;
 use App\Models\Role;
-use App\Models\Permission;
 use App\Http\Resources\UserSearchResource;
 use App\Http\Resources\UserResource;
-use PhpParser\Node\Stmt\TryCatch;
 
 class UserController extends BaseController
 {
@@ -22,10 +20,9 @@ class UserController extends BaseController
      */
     public function index(Request $request)
     {
-        // $input = $request->all();
         $query = User::query();
         if($request->has('text')){
-                $query->where('name','like', '%'.$request->input['text'].'%');
+                $query->where('name','like', '%'.$request->input('text').'%');
         }
         $user = $query->latest()->paginate($request->input('limit', 20));
         $page = [
