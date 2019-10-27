@@ -2,19 +2,39 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\Request;
+use Validator;
 
-class UserController extends Controller
+use App\Models\User;
+use App\Http\Resources\UserSearchResource;
+use App\Http\Resources\UserResource;
+
+class UserController extends BaseController
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        // $input = $request->all();
+        $query = User::query();
+        if($request->has('text')){
+                $query->where('name','like', '%'.$request->input['text'].'%');
+        }
+        $user = $query->latest()->paginate($request->input('limit', 20));
+        $page = [
+            'size_page' => $request->input('limit', 20),
+            'current_page' => $user->currentPage(),
+            'last_page' => $user->lastPage(),
+            'item_total' => $user->total(),
+            'item_from' => $user->firstItem(),
+            'item_to' => $user->lastItem()
+        ];
+
+        return $this->sendResponse(UserSearchResource::collection($user), 'Users retrieved successfully.', $page);
     }
 
     /**
@@ -35,7 +55,21 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+
+        $user = User::create($input);
+
+        return $this->sendResponse($user, 'User created successfully.');
     }
 
     /**
@@ -46,7 +80,12 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        $user = User::find($id);
+        if (is_null($user)) {
+            return $this->sendError('User not found.');
+        }
+
+        return $this->sendResponse(new UserResource($user), 'User retrieved successfully.');
     }
 
     /**
@@ -67,9 +106,22 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
-        //
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'name' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+
+        $user->name = $input['name'];
+        $user->save();
+
+        return $this->sendResponse(new UserResource($user), 'User updated successfully.');
     }
 
     /**
@@ -78,8 +130,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        //
+        $user->delete();
+        return $this->sendResponse($user, 'User deleted successfully.');
     }
 }

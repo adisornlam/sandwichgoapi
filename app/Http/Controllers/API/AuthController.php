@@ -3,47 +3,59 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use \Laravel\Passport\Http\Controllers\AccessTokenController AS ATC;
+use Psr\Http\Message\ServerRequestInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
-class AuthController extends Controller
+use App\Http\Resources\PermissoinResource;
+
+class AuthController extends ATC
 {
-    /**
-     * Login user and create token
-     *
-     * @param  [string] email
-     * @param  [string] password
-     * @param  [boolean] remember_me
-     * @return [string] access_token
-     * @return [string] token_type
-     * @return [string] expires_at
-     */
-    public function login(Request $request)
+    public function issueToken(ServerRequestInterface $request)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-            'remember_me' => 'boolean'
-        ]);
-        $credentials = request(['email', 'password']);
-        if(!Auth::attempt($credentials))
-            return response()->json([
-                'message' => 'Unauthorized'
-            ], 401);
-        $user = $request->user();
-        $tokenResult = $user->createToken('Personal Access Token');
-        $token = $tokenResult->token;
-        if ($request->remember_me)
-            $token->expires_at = Carbon::now()->addWeeks(1);
-        $token->save();
-        return response()->json([
-            'access_token' => $tokenResult->accessToken,
-            'token_type' => 'Bearer',
-            'expires_at' => Carbon::parse(
-                $tokenResult->token->expires_at
-            )->toDateTimeString()
-        ]);
+        Log::info($request->getParsedBody());
+        try {
+            //get username (default is :email)
+            $username = $request->getParsedBody()['username'];
+
+            //get user
+            $user = User::where('email', $username)->first();
+            if(!$user) {
+                return response()->json(['success' => false, 'message' => 'User account not found.'], 200);
+            }
+
+            //generate token
+            $tokenResponse = parent::issueToken($request);
+
+            //convert response to json string
+            $content = $tokenResponse->getContent();
+
+            //convert json to array
+            $data = json_decode($content, true);
+
+            if (isset($data["error"])) {
+                return response()->json(['success' => false, 'message' => 'Incorrect password, please try again or click "forgot password" to reset.'], 200);
+            }
+            
+            $response['status'] = true;
+            $response['data'] = $data;
+            // $response['type'] = 'account';
+            $response['roles'] = $user->roles->first()->slug;
+            $response['permissions'] = PermissoinResource::collection($user->permissions);
+            return response()->json($response, 200);
+        } catch (ModelNotFoundException $e) { // email notfound
+            //return error message
+            return response()->json(['success' => false, "message" => "User not found"], 200);
+        } catch (OAuthServerException $e) { //password not correct..token not granted
+            //return error message
+            return response()->json(['success' => false, "message" => $e->getMessage()], 200);
+        } catch (Exception $e) {
+            ////return error message
+            return response()->json(['success' => false, "message" => "error: " . $e], 200);
+        }
     }
 }
