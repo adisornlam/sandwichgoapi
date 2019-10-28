@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Subdistrict;
 
 class SubdistrictTableSeeder extends Seeder
 {
@@ -7383,6 +7383,6 @@ class SubdistrictTableSeeder extends Seeder
 			array('id' => '7363','code' => '961302','name_th' => 'บูกิต','name_en' => 'Bu Kit','latitude' => '6.182','longitude' => '101.828','district_id' => '928','zip_code' => '96130'),
 			array('id' => '7364','code' => '961303','name_th' => 'มะรือโบออก','name_en' => 'Marue Bo Ok','latitude' => '6.249','longitude' => '101.875','district_id' => '928','zip_code' => '96130')
 		);
-		DB::table('subdistricts')->insert($subdistricts);
+		Subdistrict::insert($subdistricts);
 	}
 }

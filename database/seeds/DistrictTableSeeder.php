@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\District;
 
 class DistrictTableSeeder extends Seeder
 {
@@ -947,6 +947,6 @@ class DistrictTableSeeder extends Seeder
 			array('id' => '927','code' => '9612','name_th' => 'จะแนะ','name_en' => 'Chanae','province_id' => '77'),
 			array('id' => '928','code' => '9613','name_th' => 'เจาะไอร้อง','name_en' => 'Cho-airong','province_id' => '77')
 		);	
-		DB::table('districts')->insert($districts);
+		District::insert($districts);
     }
 }

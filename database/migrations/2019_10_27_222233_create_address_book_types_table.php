@@ -18,7 +18,6 @@ class CreateAddressBookTypesTable extends Migration
             $table->string('slug', 100);
             $table->string('name_th', 100);
             $table->string('name_en', 100);
-            $table->timestamps();
         });
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Province;
 
 class ProvinceTableSeeder extends Seeder
 {
@@ -96,6 +96,6 @@ class ProvinceTableSeeder extends Seeder
 			array('id' => '76','code' => '95','name_th' => 'ยะลา','name_en' => 'Yala'),
 			array('id' => '77','code' => '96','name_th' => 'นราธิวาส','name_en' => 'Narathiwat')
 		);
-		DB::table('provinces')->insert($provinces);
+		Province::insert($provinces);
     }
 }
