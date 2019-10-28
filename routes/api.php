@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 Route::middleware('api')->group(function() {
-   // Route::post('login', 'API\AuthController@issueToken');
+   Route::post('login', 'API\AuthController@issueToken');
 });
 
 Route::group(['middleware' => 'role:admin'], function() {
