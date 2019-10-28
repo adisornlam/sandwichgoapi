@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Province extends Model
 {
-    protected $table = 'provinces';
+    protected $fillable = ['code','name_th','name_en'];
     public $timestamps = false;
     public function districts()
     {

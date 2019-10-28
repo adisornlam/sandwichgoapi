@@ -14,15 +14,15 @@ class CreateAddressBooksTable extends Migration
     public function up()
     {
         Schema::create('address_books', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('user_id')->unsigned();
+            $table->bigIncrements('id');
+            $table->bigInteger('user_id')->unsigned();
             $table->string('mobile', 20)->nullable();
             $table->string('address', 100)->nullable();
-            $table->integer('subdistrict_id')->unsigned();
-            $table->integer('district_id')->unsigned();
-            $table->integer('province_id')->unsigned();
+            $table->bigInteger('subdistrict_id')->unsigned();
+            $table->bigInteger('district_id')->unsigned();
+            $table->bigInteger('province_id')->unsigned();
             $table->string('zipcode', 5)->nullable();
-            $table->integer('address_book_type_id')->unsigned();
+            $table->bigInteger('address_book_type_id')->unsigned();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');

@@ -14,14 +14,14 @@ class CreateSubdistrictsTable extends Migration
     public function up()
     {
         Schema::create('subdistricts', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('code', 10);
+            $table->bigIncrements('id');
+            $table->bigInteger('code')->nullable();
             $table->string('name_th', 100);
             $table->string('name_en', 100)->nullable();
             $table->string('latitude', 20)->nullable();
             $table->string('longitude', 20)->nullable();
-            $table->integer('district_id')->unsigned();
-            $table->integer('zip_code')->nullable();
+            $table->bigInteger('district_id')->unsigned();
+            $table->bigInteger('zip_code')->nullable();
 
             $table->foreign('district_id')->references('id')->on('districts');
         });
