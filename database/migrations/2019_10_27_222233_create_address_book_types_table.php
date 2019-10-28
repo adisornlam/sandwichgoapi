@@ -15,7 +15,9 @@ class CreateAddressBookTypesTable extends Migration
     {
         Schema::create('address_book_types', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name', 100);
+            $table->string('slug', 100);
+            $table->string('name_th', 100);
+            $table->string('name_en', 100);
             $table->timestamps();
         });
     }
