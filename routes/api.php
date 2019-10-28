@@ -20,11 +20,16 @@ Route::middleware('api')->group(function() {
    Route::post('login', 'API\AuthController@issueToken');
 });
 
-Route::group(['middleware' => 'role:admin'], function() {
-   //  Route::get('/admin', function() {
-   //     return 'Welcome Admin';
-   //  });
+Route::middleware('auth:api')->group( function () {
+   Route::post('logout', 'API\AuthController@logout');
    Route::apiResources([
+      // 'products' => 'API\ProductController',
       'users' => 'API\UserController',
    ]);
- });
+});
+
+// Route::group(['middleware' => 'role:admin'], function() {
+//    Route::apiResources([
+//       'users' => 'API\UserController',
+//    ]);
+//  });

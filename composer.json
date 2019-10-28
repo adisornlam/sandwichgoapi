@@ -8,7 +8,7 @@
   "license": "MIT",
   "type": "project",
   "require": {
-    "php": "^7.3.7",
+    "php": "^7.3",
     "fideloper/proxy": "^4.0",
     "laravel/framework": "^6.0",
     "laravel/passport": "^7.5",
