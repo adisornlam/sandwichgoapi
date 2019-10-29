@@ -16,6 +16,7 @@ class CreateAddressBooksTable extends Migration
         Schema::create('address_books', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('user_id')->unsigned();
+            $table->string('fullname', 100)->nullable();
             $table->string('mobile', 20)->nullable();
             $table->string('address', 100)->nullable();
             $table->bigInteger('subdistrict_id')->unsigned();

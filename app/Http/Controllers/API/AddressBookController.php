@@ -5,6 +5,9 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Illuminate\Http\Request;
 use App\Models\AddressBook;
+use App\Http\Resources\AddressBookResource;
+use App\Http\Resources\AddressBookSearchResource;
+use Validator;
 
 class AddressBookController extends BaseController
 {
@@ -26,7 +29,7 @@ class AddressBookController extends BaseController
             'item_to' => $addressbook->lastItem()
         ];
 
-        return $this->sendResponse(UserSearchResource::collection($addressbook), 'Address Book retrieved successfully.', $page);
+        return $this->sendResponse(AddressBookSearchResource::collection($addressbook), 'Address Book retrieved successfully.', $page);
     }
 
     /**
@@ -47,7 +50,38 @@ class AddressBookController extends BaseController
      */
     public function store(Request $request)
     {
-        //
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'fullname' => 'required|string|max:100',
+            'mobile' => 'required|numeric',
+            'address' => 'required',
+            'subdistrict_id' => 'required',
+            'district_id' => 'required',
+            'province_id' => 'required',
+            'address_book_type_id' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+
+        try {
+            $addressbook = new AddressBook;
+            $addressbook->user_id = $request->user()->id;
+            $addressbook->fullname = $request->input('fullname');
+            $addressbook->mobile = $request->input('mobile');
+            $addressbook->address = $request->input('address');
+            $addressbook->subdistrict_id = $request->input('subdistrict_id');
+            $addressbook->district_id = $request->input('district_id');
+            $addressbook->province_id = $request->input('province_id');
+            $addressbook->address_book_type_id = $request->input('address_book_type_id');
+            $addressbook->save();
+
+            return $this->sendResponse($addressbook, 'Address Book created successfully.');
+        } catch (\Throwable $th) {
+            return $this->sendError('Error.', $th->getMessage());
+        }
     }
 
     /**
@@ -58,7 +92,12 @@ class AddressBookController extends BaseController
      */
     public function show($id)
     {
-        //
+        $addressbook = AddressBook::find($id);
+        if (is_null($addressbook)) {
+            return $this->sendError('Address Book not found.');
+        }
+
+        return $this->sendResponse(new AddressBookResource($addressbook), 'Address Book retrieved successfully.');
     }
 
     /**
@@ -79,9 +118,38 @@ class AddressBookController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, AddressBook $addressbook)
     {
-        //
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'fullname' => 'required|string|max:100',
+            'mobile' => 'required|numeric',
+            'address' => 'required',
+            'subdistrict_id' => 'required',
+            'district_id' => 'required',
+            'province_id' => 'required',
+            'address_book_type_id' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+
+        try {
+            $addressbook->fullname = $request->input('fullname');
+            $addressbook->mobile = $request->input('mobile');
+            $addressbook->address = $request->input('address');
+            $addressbook->subdistrict_id = $request->input('subdistrict_id');
+            $addressbook->district_id = $request->input('district_id');
+            $addressbook->province_id = $request->input('province_id');
+            $addressbook->address_book_type_id = $request->input('address_book_type_id');
+            $addressbook->save();
+
+            return $this->sendResponse($addressbook, 'Address Book updated successfully.');
+        } catch (\Throwable $th) {
+            return $this->sendError('Error.', $th->getMessage());
+        }
     }
 
     /**
@@ -90,8 +158,9 @@ class AddressBookController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(AddressBook $addressbook)
     {
-        //
+        $addressbook->delete();
+        return $this->sendResponse($addressbook, 'Address Book deleted successfully.');
     }
 }

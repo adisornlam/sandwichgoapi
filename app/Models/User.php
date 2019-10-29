@@ -39,4 +39,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Permission::class, 'users_permissions');
     }
+
+    public function userinfo()
+    {
+        return $this->hasOne(UserInfo::class);
+    }
+
+    public function addressbook()
+    {
+        return $this->hasMany(AddressBook::class);
+    }
 }

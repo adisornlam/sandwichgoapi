@@ -12,4 +12,5 @@ class UserInfo extends Model
         'taxid',
         'birthday'
     ];
+    
 }
